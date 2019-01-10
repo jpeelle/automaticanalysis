@@ -4,28 +4,27 @@
 %
 %--------------------------------------------------------------------------
 % COMP_SIGNAL creates regressors with mean signal intensity values for each
-% segmented compartment [WhiteMatter (WM), CerebralSpinalFluid (CSF) and
-% Out-of-Brain (OOB)] separately for each image. The resulting three
-% regressors are saved in a mat file (structure: [WM CSF OOB]). These
-% regressors can be used similarly to head motion regressors. Where the
-% later can account for head motion effects, the compartment signal
-% regressors can be used to account for global signal noise due to changes
-% in the magnetic field over time (due to the movement of a conductive body
-% - like an arm or hand - through the magnetic field) or other nuisance
-% factors. Compartment signals are preferred over global signals as
-% inclusion of the later might induce fake BOLD deactivations and a
-% reduction in power. The compartment signals do not contain GreyMatter (so
-% also no BOLD response) and therefore do not suffer from these ill
-% effects.
+% segmented compartment separately for each image: grey matter (GM), white
+% matter (WM), cerebrospinal fluid (CSF), and optionally out-of head (OOH).
+% The resulting regressors are saved in a mat file (structure: [GM WM CSF
+% OOH]). These regressors can be used similarly to head motion regressors.
+% Where the later can account for head motion effects, the compartment
+% signal regressors can be used to account for global signal noise due to
+% changes in the magnetic field over time (due to the movement of a
+% conductive body - like an arm or hand - through the magnetic field) or
+% other nuisance factors. WM, CSF, and OOH signals are sometimes preferred
+% over global signals as inclusion of the later might induce spurious BOLD
+% deactivations and a reduction in power.
 %
-% When using these regressors, you could cite my HBM abstract:
+% When using these regressors, you could cite a relevant HBM abstract:
 %   Verhagen L, Grol MJ, Dijkerman HC, Toni I. (2006) Studying visually-
 %       guided reach to grasp movements in an MR-environment. Human Brain
 %       Mapping.
 %
 % or cite my research paper which describes the methods superficially:
 %   Verhagen L, Dijkerman HC, Grol MJ, Toni I (2008) Perceptuo-motor
-%       interactions during prehension movements. J Neurosci 28(18):4726-4735
+%       interactions during prehension movements. J Neurosci
+%       28(18):4726-4735
 %
 % or wait for the upcoming methods paper (a little patience required):
 %   Verhagen L, Grol MJ, Dijkerman HC, Toni I. Studying visually-guided
