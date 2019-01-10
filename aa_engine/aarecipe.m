@@ -56,7 +56,7 @@ if ~exist(defaultparameters,'file')
     xml=xml_read(seedparam,Pref);
     configdir = fullfile(getenv('HOME'),'.aa');
     % generate new parameters file N.B.: in networks with shared resources
-    % average user may not be able to write into aa_paremetersets
+    % average user may not be able to write into aa_parametersets
     [defaultparameters, rootpath] = userinput('uiputfile',{'*.xml','All Parameter Files' },...
         'Location of the parameters file',fullfile(configdir, defaultparameters),'GUI',isGUI);
     assert(ischar(defaultparameters), 'exiting');
