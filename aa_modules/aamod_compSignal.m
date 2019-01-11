@@ -21,7 +21,7 @@
 %       guided reach to grasp movements in an MR-environment. Human Brain
 %       Mapping.
 %
-% or cite my research paper which describes the methods superficially:
+% or cite a research paper which describes the methods superficially:
 %   Verhagen L, Dijkerman HC, Grol MJ, Toni I (2008) Perceptuo-motor
 %       interactions during prehension movements. J Neurosci
 %       28(18):4726-4735
