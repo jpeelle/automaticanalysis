@@ -9,16 +9,12 @@
 %        * FSL (https://fsl.fmrib.ox.ac.uk/fsl/fslwiki/)
 %        * wget, which is included on most Linux distributions but which
 %        you will need to install on a mac (only for automatic download)
-%
-% v3: Johan Carlin, MRC CBU, 2018-08-06
-% v2: Tibor Auer MRC Cognition and Brain Sciences Unit, 2016-02-17
-% v1: Rhodri Cusack Brain and Mind Institute, Western University, 2014-12-15
 
-%% INITIALISE
+%% Initialise
 clear
 aa_ver5;
 
-%% LOAD TASKLIST
+%% Load tasklist
 % Everything needed to run an analysis is stored in the aap structure. The
 % function aarecipe initializes this structure based on a list of tasks
 % (taklist, in XML format). Optionally you can also pass a set of default
@@ -49,26 +45,29 @@ aa_ver5;
 %      <spmdir desc="Path(s) to SPM (>SPM12 r6470 required)" ui="dir">/Users/peelle/software/spm12</spmdir>  
 %      <fsldir desc='Path to fsl' ui='dir'>/usr/local/fsl</fsldir>
       
-
 aap = aarecipe('aap_parameters_user.xml', 'aap_tasklist_demo.xml');
 
 
 
 %% Make sure FSL can be used from Matlab
-% (this code could also be added to startup.m, which would save you from
-% adding it to individual user scripts)
- 
-FSLbinaryDirectory = '/usr/local/fsl/bin'; 
-currentPath = getenv('PATH');
-if isempty(strfind(currentPath,FSLbinaryDirectory))
-    correctedPath = [ currentPath ':' FSLbinaryDirectory ];
-    setenv('PATH', correctedPath);
-end
+% There is an option to set a path for an FSL setup script, to be run before
+% FSL is run:
+%
+% <fslsetup desc='Path to fsl setup script, executing before any fsl command' ui='text'></fslsetup>
+%
+% This is a text file that contains something like the following, which
+% tels Matlab about your FSL /bin directory:
+%  
+%     FSLbinaryDirectory = '/usr/local/fsl/bin'; 
+%     currentPath = getenv('PATH');
+%     if isempty(strfind(currentPath,FSLbinaryDirectory))
+%         correctedPath = [ currentPath ':' FSLbinaryDirectory ];
+%         setenv('PATH', correctedPath);
+%     end
 
 
 
-
-%% DEFINE STUDY SPECIFIC PARAMETERS
+%% Define study-specific parameters
 % Having been initialized, the aap structure has a number of subfields that
 % contain options about the study. Although we originally set these using
 % XML parameterset (passed to aarecipe above), we can change those fields
@@ -94,24 +93,30 @@ aap.options.wheretoprocess = 'localsingle';
 aap.tasksettings.aamod_norm_write.vox = [3 3 3];
 aap.tasksettings.aamod_norm_write_meanepi.vox = [3 3 3];
 
-%% DOWNLOAD DATA
+%% Download data
 % Download the demo dataset (can comment this out if already done). The
 % aa_downloaddemo function uses wget, which may not be installed on your
 % computer. For Macs, you can use homebrew package manager (http://brew.sh)
-% to install wget (once homebrew is installed: brew install wget).
+% to install wget (once homebrew is installed, type: brew install wget).
 
 
-% You will also need to make sure wget is in your path. You can use the
-% GETENV function to add any location (such as /usr/local/bin) to your
-% path
-PATH = getenv('PATH');
-setenv('PATH', [PATH ':/usr/local/bin']);
+% You will also need to make sure wget is in your path. For Linux
+% installations, this is probably the case. If not, or for Mac
+% installations, you can use the GETENV function to add any location (such
+% as /usr/local/bin) to your path. The code below checks to see if
+% /usr/loca/bin is in the path, and if not, adds it (this is a likely
+% location for wget).
+if isempty(strfind(getenv('PATH'), '/usr/local/bin'))
+    PATH = getenv('PATH');
+    setenv('PATH', [PATH ':/usr/local/bin']);
+end
 
-% Once wget is installed and in your path, you can download the data:
+% Once wget is installed and in your path, you can download the data
+% automatically:
 aap = aa_downloaddemo(aap);
 
 
-%% SET UP DATA
+%% Set up data
 % Define how subject identifier (e.g. 2014_03_29_9001) is turned into
 % subject foldername in rawdatadir
 aap.directory_conventions.subjectoutputformat = '%s';
@@ -126,7 +131,7 @@ aap.directory_conventions.protocol_structural = 'MPRAGE  iPAT2_sag';
 % Number of dummy scans at start of EPI runs
 aap.acq_details.numdummies = 10;
 
-%% STUDY INFORMATION
+%% Study information
 % Where to put the analyzed data
 aap.acq_details.root = fullfile('/Users/peelle/aa/aa_demo_analysis');
 aap.directory_conventions.analysisid = 'auditory';     
@@ -134,7 +139,6 @@ aap.directory_conventions.analysisid = 'auditory';
 % Any settings for specific tasks? (These can also be set in the tasklist
 % file - i.e., for this script, in aap_tasklist_demo.xml.)
 aap.tasksettings.aamod_segment8.samp = 3;
-
 
 
 % Add data:
@@ -151,6 +155,8 @@ aap = aas_addevent(aap,'aamod_firstlevel_model','*','*','Sound',0:26:390, 15);
 % Specify contrast - sound minus silence
 aap = aas_addcontrast(aap, 'aamod_firstlevel_contrasts', '*', 'sameforallsessions', 1, 'sound-silence', 'T');
 
-%% DO PROCESSING
+%% Do processing
 aa_doprocessing(aap);
+
+%% Report 
 aa_report(fullfile(aas_getstudypath(aap),aap.directory_conventions.analysisid));
